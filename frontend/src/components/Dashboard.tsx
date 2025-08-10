@@ -328,6 +328,9 @@ export default function EmployeeDashboard() {
                 )}
             </div>) : (
                 <div className="p-8 pt-2 bg-gray-50 min-h-screen flex flex-col w-full h-full">
+                    <div className='flex justify-end items-center'>
+                        <p onClick={logout} className='cursor-pointer flex items-center text-gray-500'>Logout <IoMdExit className='ml-2' /></p>
+                    </div>
                     <div className='w-full flex justify-end'>
                         <button className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">Apply</button>
                     </div>

@@ -10,11 +10,14 @@ export default function AuthPage() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_API_URL}users/login`,
@@ -30,11 +33,14 @@ export default function AuthPage() {
           ? (error as { message?: string }).message
           : "An error occurred";
       toast.error(`Login failed: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
 
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
+    setLoading(true);
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}users/register`, {
         name,
@@ -43,7 +49,7 @@ export default function AuthPage() {
         role: "employee"
       });
       toast.success("Account created! Please log in.");
-      setIsLogin(true); // Switch to login form
+      setIsLogin(true);
       setName("");
       setEmail("");
       setPassword("");
@@ -53,6 +59,8 @@ export default function AuthPage() {
           ? (error as { message?: string }).message
           : "An error occurred";
       toast.error(`Signup failed: ${errorMessage}`);
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -68,7 +76,7 @@ export default function AuthPage() {
         </h2>
         <p className="text-gray-500 text-center mb-8">
           {isLogin
-            ? "Sign in to continue to your dashboard"
+            ? "Test Credentials: admin@example.com / admin123"
             : "Sign up to get started"}
         </p>
 
@@ -87,6 +95,7 @@ export default function AuthPage() {
                 value={name}
                 onChange={(e) => setName(e.target.value)}
                 className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring focus:ring-purple-100 outline-none transition"
+                disabled={loading}
               />
             </div>
           )}
@@ -101,6 +110,7 @@ export default function AuthPage() {
               value={email}
               onChange={(e) => setEmail(e.target.value)}
               className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring focus:ring-purple-100 outline-none transition"
+              disabled={loading}
             />
           </div>
 
@@ -114,14 +124,16 @@ export default function AuthPage() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               className="mt-1 w-full px-4 py-3 rounded-xl border border-gray-200 focus:border-purple-500 focus:ring focus:ring-purple-100 outline-none transition"
+              disabled={loading}
             />
           </div>
 
           <button
             type="submit"
-            className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl shadow-lg transition transform hover:scale-[1.02]"
+            disabled={loading}
+            className="w-full py-3 bg-purple-600 hover:bg-purple-700 text-white font-semibold rounded-xl shadow-lg transition transform hover:scale-[1.02] disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            {isLogin ? "Sign In" : "Sign Up"}
+            {loading ? "Please wait..." : isLogin ? "Sign In" : "Sign Up"}
           </button>
         </form>
 
