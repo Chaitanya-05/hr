@@ -2,7 +2,7 @@ import axios from 'axios';
 import { useState, useMemo, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import api from '../services/axios';
-import type { Employee } from '../config/assessmentquestions';
+import { assessmentQuestions, type Employee } from '../config/assessmentquestions';
 
 
 
@@ -398,7 +398,7 @@ const learningOptions = [
               {errors.answers && <p className="text-red-500 text-sm">{errors.answers}</p>}
               {questions.map(i => (
                 <div key={i} className="bg-gray-50 p-3 rounded border">
-                  <label className="block font-medium mb-2 text-sm">Question {i}</label>
+                  <label className="block font-medium mb-2 text-sm"> {assessmentQuestions[`q${i}` as keyof typeof assessmentQuestions]}</label>
                   <input
                     type="text"
                     placeholder={`Answer for Question ${i}`}

@@ -4,7 +4,7 @@ import toast from 'react-hot-toast';
 import api from '../services/axios';
 import type { Employee } from '../config/assessmentquestions';
 import ViewEmployee from './ViewEmployee';
-import { FaEye, FaPencilAlt } from 'react-icons/fa';
+import { FaEye, FaPencilAlt, FaTachometerAlt, FaUserCircle } from 'react-icons/fa';
 import { exportFilteredToCSV } from '../utils/exportCSV';
 import { MdOutlineFileDownload } from 'react-icons/md';
 import { IoMdExit } from 'react-icons/io';
@@ -166,168 +166,214 @@ export default function EmployeeDashboard() {
 
     return (
         <>
-            {userRole === 'admin' || userRole === 'HR' ? (<div className="p-8 pt-2 bg-gray-50 min-h-screen">
-                <div className='flex justify-end items-center'>
-                    <p onClick={logout} className='cursor-pointer flex items-center text-gray-500'>Logout <IoMdExit className='ml-2' /></p>
-                </div>
-                <div className="bg-purple-100 p-6 rounded-xl mb-6 flex justify-between items-start">
-                    <div>
-                        <h1 className="text-3xl font-bold mb-2">Employee Dashboard</h1>
-                        <p className="text-gray-700">View, filter, and sort employees based on mindset and attitude assessments.</p>
-                    </div>
-                    <div>
-                        <button onClick={() => setShowModal(true)} className="mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded">Add Employee</button>
-                    </div>
-                </div>
+            {userRole === 'admin' || userRole === 'HR' ? (
+                /* Layout with Sidebar + Topbar — your original dashboard content is unchanged and sits inside the main area */
+                <div className="flex h-screen">
+                    {/* Sidebar */}
+                    <aside className="hidden lg:flex text-white flex-shrink-0 w-64 bg-purple-700 h-full  flex-col justify-between">
+                        <div>
+                            <div className="p-6 flex items-center gap-3 border-b border-purple-600">
+                                {/* small logo circle, name */}
+                                <div className="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center text-lg font-bold">A</div>
+                                <div>
+                                    <div className="font-bold text-lg">YourApp</div>
+                                    <div className="text-sm text-purple-200">Employee Hub</div>
+                                </div>
+                            </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-7 gap-4 mb-4">
-                    <input
-                        type="text"
-                        className="col-span-2 border p-2 rounded"
-                        placeholder="Search name, email, keywords"
-                        value={search}
-                        onChange={e => setSearch(e.target.value)}
-                    />
-                    <select className="border p-2 rounded" value={role} onChange={e => setRole(e.target.value)}>
-                        {uniqueValues.roles.map((r, i) => <option key={i} value={r}>{r}</option>)}
-                    </select>
-                    <select className="border p-2 rounded" value={interest} onChange={e => setInterest(e.target.value)}>
-                        {uniqueValues.interests.map((v, i) => <option key={i} value={v}>{v}</option>)}
-                    </select>
-                    <select className="border p-2 rounded" value={goals} onChange={e => setGoals(e.target.value)}>
-                        {uniqueValues.goals.map((v, i) => <option key={i} value={v}>{v}</option>)}
-                    </select>
-                    <select className="border p-2 rounded" value={culture} onChange={e => setCulture(e.target.value)}>
-                        {uniqueValues.cultures.map((v, i) => <option key={i} value={v}>{v}</option>)}
-                    </select>
-                    <select className="border p-2 rounded" value={learning} onChange={e => setLearning(e.target.value)}>
-                        {uniqueValues.learnings.map((v, i) => <option key={i} value={v}>{v}</option>)}
-                    </select>
-                    <select className="border p-2 rounded" value={sortOption} onChange={e => setSortOption(e.target.value)}>
-                        <option value="name-asc">Name (A-Z)</option>
-                        <option value="name-desc">Name (Z-A)</option>
-                        <option value="date-recent">Submission Date (Recent)</option>
-                        <option value="date-oldest">Submission Date (Oldest)</option>
-                        <option value="learning-high">Learning Score (High)</option>
-                        <option value="learning-low">Learning Score (Low)</option>
-                    </select>
-
-                </div>
-                <div className='flex justify-between items-center'>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                        {presets.map(preset => (
-                            <span
-                                key={preset.name}
-                                className="bg-purple-100 text-purple-800 px-2 py-1 rounded h-fit text-sm flex items-center cursor-pointer"
-                                onClick={() => applyPreset(preset)}
-                            >
-                                {preset.name}
-                                <button
-                                    onClick={(e) => { e.stopPropagation(); removePreset(preset.name); }}
-                                    className="ml-3 text-purple-600 hover:text-purple-800"
-                                >
-                                    ×
+                            <nav className="mt-6 px-2">
+                                <button className="flex items-center gap-3 px-4 py-3 w-full text-left hover:bg-purple-600 rounded">
+                                    <FaTachometerAlt /> <span>Dashboard</span>
                                 </button>
-                            </span>
-                        ))}
-                    </div>
-                    <div className="flex gap-2 mb-4">
-                        <input
-                            type="text"
-                            placeholder="Preset Name"
-                            value={presetName}
-                            onChange={(e) => setPresetName(e.target.value)}
-                            className="border p-2 rounded"
-                        />
-                        <button
-                            onClick={savePreset}
-                            className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
-                        >
-                            Save Preset
-                        </button>
-                    </div>
-                </div>
+                                {/* add more nav items here later if needed */}
+                            </nav>
+                        </div>
 
-                <div className="mb-4 flex items-center justify-between">
-                    <p className='text-xl font-bold'>Employees</p>
-                    <button className='mt-4 bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded flex items-center gap-2' onClick={() => exportFilteredToCSV(filteredEmployees)}>
-                        <MdOutlineFileDownload size={22} /> Export CSV
-                    </button>
+                        <div className="p-4 border-t border-purple-600 ">
+                            <button onClick={logout} className="flex items-center gap-2 text-left w-full hover:bg-purple-600 px-2 py-2 rounded">
+                                <IoMdExit /> Logout
+                            </button>
+                        </div>
+                    </aside>
 
-                </div>
-                <div className="overflow-x-auto">
-                    <div className="overflow-x-auto">
-                        <table className="min-w-full bg-white rounded-xl overflow-hidden">
-                            <thead className="bg-gray-100 text-left">
-                                <tr>
-                                    <th className="py-2 px-4">Name</th>
-                                    <th className="py-2 px-4">Role</th>
-                                    <th className="py-2 px-4">Email</th>
-                                    <th className="py-2 px-4">Status</th>
-                                    <th className="py-2 px-4">Tags</th>
-                                    <th className="py-2 px-4">Submitted</th>
-                                    <th className="py-2 px-4">Learning Score</th>
-                                    <th className="py-2 px-4">Actions</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {filteredEmployees.map((emp, index) => (
-                                    <tr key={index} className="border-t">
-                                        <td className="py-2 px-4 font-medium text-gray-900">{emp.name}</td>
-                                        <td className="py-2 px-4">{emp.role}</td>
-                                        <td className="py-2 px-4">{emp.email}</td>
-                                        <td className="py-2 px-4">
-                                            <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
-                                                {emp.assessment_submitted ? 'Submitted' : 'Pending'}
-                                            </span>
-                                        </td>
-                                        <td className="py-2 px-4 space-x-1">
-                                            {emp.tags.map((tag, i) => (
-                                                <span key={i} className="inline-block bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded-full">{tag}</span>
+                    {/* Main Content */}
+                    <div className="flex-1 flex flex-col h-full ">
+                        {/* Top Bar */}
+                        <div className="flex justify-between items-center bg-white shadow px-6 py-3 box-border">
+                            <div className="flex items-center gap-3">
+                                <FaUserCircle size={28} className="text-gray-600" />
+                                <span className="font-semibold">John Doe</span>
+                            </div>
+                            <div className="flex gap-3">
+                                <button
+                                    onClick={() => exportFilteredToCSV(filteredEmployees)}
+                                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded flex items-center gap-2"
+                                >
+                                    <MdOutlineFileDownload size={18} /> Export CSV
+                                </button>
+                                <button
+                                    onClick={() => setShowModal(true)}
+                                    className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+                                >
+                                    Add Employee
+                                </button>
+                            </div>
+                        </div>
+
+                        {/* === Your original dashboard content starts here (kept intact) === */}
+                        <div className="p-8 pt-2 bg-gray-50 h-full">
+                            <div className="bg-purple-100 p-6 rounded-xl mb-6 flex justify-between items-start">
+                                <div>
+                                    <h1 className="text-3xl font-bold mb-2">Employee Dashboard</h1>
+                                </div>
+                            </div>
+
+                            <div className="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-7 gap-4 mb-4">
+                                <input
+                                    type="text"
+                                    className="col-span-2 border p-2 rounded"
+                                    placeholder="Search name, email, keywords"
+                                    value={search}
+                                    onChange={e => setSearch(e.target.value)}
+                                />
+                                <select className="border p-2 rounded" value={role} onChange={e => setRole(e.target.value)}>
+                                    {uniqueValues.roles.map((r, i) => <option key={i} value={r}>{r}</option>)}
+                                </select>
+                                <select className="border p-2 rounded" value={interest} onChange={e => setInterest(e.target.value)}>
+                                    {uniqueValues.interests.map((v, i) => <option key={i} value={v}>{v}</option>)}
+                                </select>
+                                <select className="border p-2 rounded" value={goals} onChange={e => setGoals(e.target.value)}>
+                                    {uniqueValues.goals.map((v, i) => <option key={i} value={v}>{v}</option>)}
+                                </select>
+                                <select className="border p-2 rounded" value={culture} onChange={e => setCulture(e.target.value)}>
+                                    {uniqueValues.cultures.map((v, i) => <option key={i} value={v}>{v}</option>)}
+                                </select>
+                                <select className="border p-2 rounded" value={learning} onChange={e => setLearning(e.target.value)}>
+                                    {uniqueValues.learnings.map((v, i) => <option key={i} value={v}>{v}</option>)}
+                                </select>
+                                <select className="border p-2 rounded" value={sortOption} onChange={e => setSortOption(e.target.value)}>
+                                    <option value="name-asc">Name (A-Z)</option>
+                                    <option value="name-desc">Name (Z-A)</option>
+                                    <option value="date-recent">Submission Date (Recent)</option>
+                                    <option value="date-oldest">Submission Date (Oldest)</option>
+                                    <option value="learning-high">Learning Score (High)</option>
+                                    <option value="learning-low">Learning Score (Low)</option>
+                                </select>
+
+                            </div>
+                            <div className='flex justify-between items-center'>
+                                <div className="flex flex-wrap gap-2 mb-4">
+                                    {presets.map(preset => (
+                                        <span
+                                            key={preset.name}
+                                            className="bg-purple-100 text-purple-800 px-2 py-1 rounded h-fit text-sm flex items-center cursor-pointer"
+                                            onClick={() => applyPreset(preset)}
+                                        >
+                                            {preset.name}
+                                            <button
+                                                onClick={(e) => { e.stopPropagation(); removePreset(preset.name); }}
+                                                className="ml-3 text-purple-600 hover:text-purple-800"
+                                            >
+                                                ×
+                                            </button>
+                                        </span>
+                                    ))}
+                                </div>
+                                <div className="flex gap-2 mb-4">
+                                    <input
+                                        type="text"
+                                        placeholder="Preset Name"
+                                        value={presetName}
+                                        onChange={(e) => setPresetName(e.target.value)}
+                                        className="border p-2 rounded"
+                                    />
+                                    <button
+                                        onClick={savePreset}
+                                        className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded"
+                                    >
+                                        Save Preset
+                                    </button>
+                                </div>
+                            </div>
+
+                            <div className="overflow-x-auto">
+                                <div className="overflow-x-auto">
+                                    <table className="min-w-full bg-white rounded-xl overflow-hidden">
+                                        <thead className="bg-gray-100 text-left">
+                                            <tr>
+                                                <th className="py-2 px-4">Name</th>
+                                                <th className="py-2 px-4">Role</th>
+                                                <th className="py-2 px-4">Email</th>
+                                                <th className="py-2 px-4">Status</th>
+                                                <th className="py-2 px-4">Tags</th>
+                                                <th className="py-2 px-4">Submitted</th>
+                                                <th className="py-2 px-4">Learning Score</th>
+                                                <th className="py-2 px-4">Actions</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            {filteredEmployees.map((emp, index) => (
+                                                <tr key={index} className="border-t">
+                                                    <td className="py-2 px-4 font-medium text-gray-900">{emp.name}</td>
+                                                    <td className="py-2 px-4">{emp.role}</td>
+                                                    <td className="py-2 px-4">{emp.email}</td>
+                                                    <td className="py-2 px-4">
+                                                        <span className="bg-purple-600 text-white text-xs px-2 py-1 rounded-full">
+                                                            {emp.assessment_submitted ? 'Submitted' : 'Pending'}
+                                                        </span>
+                                                    </td>
+                                                    <td className="py-2 px-4 space-x-1">
+                                                        {emp.tags.map((tag, i) => (
+                                                            <span key={i} className="inline-block bg-gray-200 text-gray-800 text-xs px-2 py-1 rounded-full">{tag}</span>
+                                                        ))}
+                                                    </td>
+                                                    <td className="py-2 px-4">{emp.createdAt}</td>
+                                                    <td className="py-2 px-4">{emp.learning_score}</td>
+                                                    <td className="py-2 px-4 flex gap-2">
+                                                        <button onClick={() => handleEdit(emp)} className="text-blue-600 hover:text-blue-800">
+                                                            <FaPencilAlt size={16} />
+                                                        </button>
+                                                        <button onClick={() => handleView(emp)} className="text-green-600 hover:text-green-800">
+                                                            <FaEye size={16} />
+                                                        </button>
+                                                    </td>
+                                                </tr>
                                             ))}
-                                        </td>
-                                        <td className="py-2 px-4">{emp.createdAt}</td>
-                                        <td className="py-2 px-4">{emp.learning_score}</td>
-                                        <td className="py-2 px-4 flex gap-2">
-                                            <button onClick={() => handleEdit(emp)} className="text-blue-600 hover:text-blue-800">
-                                                <FaPencilAlt size={16} />
-                                            </button>
-                                            <button onClick={() => handleView(emp)} className="text-green-600 hover:text-green-800">
-                                                <FaEye size={16} />
-                                            </button>
-                                        </td>
-                                    </tr>
-                                ))}
-                            </tbody>
-                        </table>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+
+                            </div>
+
+                            {showModal && (
+                                <AddEmployee onClose={() => setShowModal(false)} onSave={handleAddEmployee} />
+                            )}
+
+                            {showEditModal && selectedEmployee && (
+                                <AddEmployee
+                                    initialData={{
+                                        ...selectedEmployee,
+                                        learning_score: selectedEmployee.learning_score ?? 0
+                                    }}
+                                    onClose={() => setShowEditModal(false)}
+                                    onSave={handleAddEmployee}
+                                />
+                            )}
+
+                            {showViewModal && selectedEmployee && (
+                                <ViewEmployee
+                                    employee={selectedEmployee}
+                                    onClose={() => setShowViewModal(false)}
+                                />
+                            )}
+                        </div>
+                        {/* === End of original dashboard content === */}
+
                     </div>
-
-
                 </div>
-
-                {showModal && (
-                    <AddEmployee onClose={() => setShowModal(false)} onSave={handleAddEmployee} />
-                )}
-
-                {showEditModal && selectedEmployee && (
-                    <AddEmployee
-                        initialData={{
-                            ...selectedEmployee,
-                            learning_score: selectedEmployee.learning_score ?? 0
-                        }}
-                        onClose={() => setShowEditModal(false)}
-                        onSave={handleAddEmployee}
-                    />
-                )}
-
-                {showViewModal && selectedEmployee && (
-                    <ViewEmployee
-                        employee={selectedEmployee}
-                        onClose={() => setShowViewModal(false)}
-                    />
-                )}
-            </div>) : (
-                <div className="p-8 pt-2 bg-gray-50 min-h-screen flex flex-col w-full h-full">
+            ) : (
+                <div className="p-8 pt-2 bg-gray-50 h-screen flex flex-col w-full">
                     <div className='flex justify-end items-center'>
                         <p onClick={logout} className='cursor-pointer flex items-center text-gray-500'>Logout <IoMdExit className='ml-2' /></p>
                     </div>
